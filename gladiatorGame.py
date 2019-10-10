@@ -2,44 +2,42 @@
     Main file/loop for gladiator game
 '''
 
-from cLibrary import *
+from charLibrary import *
 from itemLibrary import *
+from gameLibrary import *
 from buildItems import * # Also runs file. Builds items 
 
-def build_name_lst(filename):
-    name_lst = []
-    for line in open(filename):
-        name_lst += [line.strip()]
+def check_cont(cont):
+    if go == '-1':
+        return False
+    else:
+        return True
 
-    return name_lst
 
+def main():
 
-def generate_rnd_enemy_atb(atb_scale):
-    atb = []
-    for el in range(5):
-        atb.append(r.randint(1, scale))
+    # Initialize player
+
+    player_equip = Equipment(ironSwd, chainCP, chainLG, ironSH, chainHM)
+    player_stats = Attributes(0, 1, 1, 1, 1, 1)
+    player = Player("Player", player_equip, player_stats, "Location")
     
-    return Attibutes(atb[0], atb[1], atb[2], atb[3], atb[4])
+    init_builder = CharacterBuilder(player)
+    init_builder.level_safe(1)
 
+    # Loop battles
+    go = input("Continue?")
+    cont = check_cont(go)
 
-player_equip = Equipment(ironSwd, chainCP, chainLG, ironSH, chainHM)
-player_stats = Attibutes(10, 10, 10, 10, 5)
-player = Player("Player", player_equip, player_stats, "Location")
+    while cont:
 
-name_lst = build_name_lst('names.txt')
+        fight = Battle(player, None, "the Thunderdome!")
+        fight.main_loop()
 
-oppFirst_equip = Equipment(bronzeSwd, leatherCP, leatherLG, woodSH, leatherHM)
+        go = input("Continue?")
+        cont = check_cont(go)
+    
 
-scale = int(input("Enemy scale?"))
-
-while scale != -1:
-
-    rnd_nm_idx = r.randint(0, len(name_lst)-1)
-    rnd_name = name_lst[rnd_nm_idx]
-
-    opp1 = Opponent(rnd_name, oppFirst_equip, generate_rnd_enemy_atb(scale))
-
-    fight = Battle(player, opp1, "the Thunderdome!")
-    fight.main_loop()
-
-    scale = int(input("Enemy scale?"))
+    
+if __name__ == '__main__':
+    main()
