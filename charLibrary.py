@@ -121,11 +121,10 @@ class Player(Gladiator):
             print("Please enter a number listed above.")
             print("Or enter '-1' to quit.")
             move = int(input(">"))
-        os.system("CLS")
         self.choose_att(other, move)     
 
 
-class Attibutes:
+class Attributes:
 
     def __init__(self, level, strength, agility, intelligence, defense, vitality):
         self.level = level
