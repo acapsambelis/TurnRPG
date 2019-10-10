@@ -6,15 +6,15 @@
 from itemLibrary import *
 
 # Swords
-bareSwd = Sword("None", 0)
-bronzeSwd = Sword("Bronze sword", 10)
-ironSwd = Sword("Iron sword", 25)
-broadSwd = Sword("Broadsword", 40)
+bareSwd = Sword("None", 0, 0)
+bronzeSwd = Sword("Bronze sword", 0, 10)
+ironSwd = Sword("Iron sword", 10, 25)
+broadSwd = Sword("Broadsword", 25, 40)
 
 # Axes
-bareAxe = Axe("None", 0)
-bronzeAxe = Axe("Bronze axe", 15)
-steelAxe = Axe("Steel axe", 30)
+bareAxe = Axe("None", 0, 0)
+bronzeAxe = Axe("Bronze axe", 0, 15)
+steelAxe = Axe("Steel axe", 15, 30)
 
 # Chestplates
 bareCP = Chestplate("None", 0)

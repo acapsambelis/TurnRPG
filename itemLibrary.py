@@ -17,9 +17,10 @@ class Equipment:
 
 class Sword(Equipment):
     
-    def __init__(self, name, dmg):
+    def __init__(self, name, dmg_l, dmg_h):
         self.name = name
-        self.dmg = dmg
+        self.dmg_l = dmg_l
+        self.dmg_h = dmg_h
 
     def bleedDMG(self, victim):
         pass
@@ -27,9 +28,10 @@ class Sword(Equipment):
 
 class Axe(Equipment):
     
-    def __init__(self, name, dmg):
+    def __init__(self, name, dmg_l, dmg_h):
         self.name = name
-        self.dmg = dmg
+        self.dmg_l = dmg_l
+        self.dmg_h = dmg_h
 
     def gashDMG(self, victim):
         pass

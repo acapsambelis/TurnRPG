@@ -23,7 +23,7 @@ def generate_rnd_enemy_atb(atb_scale):
 
 
 player_equip = Equipment(ironSwd, chainCP, chainLG, ironSH, chainHM)
-player_stats = Attibutes(10, 10, 10, 10, 10)
+player_stats = Attibutes(10, 10, 10, 10, 5)
 player = Player("Player", player_equip, player_stats, "Location")
 
 name_lst = build_name_lst('names.txt')
@@ -39,7 +39,7 @@ while scale != -1:
 
     opp1 = Opponent(rnd_name, oppFirst_equip, generate_rnd_enemy_atb(scale))
 
-    fight = Battle(player, opp1, "Battle")
-    fight.begin()
+    fight = Battle(player, opp1, "the Thunderdome!")
+    fight.main_loop()
 
     scale = int(input("Enemy scale?"))
