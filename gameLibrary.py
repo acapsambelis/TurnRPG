@@ -4,8 +4,8 @@
 
 from buildItems import *
 from charLibrary import *
-import os
 
+import os
 import random as r
 
 class GameSave:
@@ -26,76 +26,6 @@ class GameSave:
     name_lst = build_name_lst('names.txt')
 
 
-class CharacterBuilder(GameSave):
-
-    def __init__(self, character):
-        self.character = character
-
-    def display_stats(self):
-        print("\n-----------------------------------------------")
-        print(self.character.name)
-        print("Level: " + str(self.character.stats.level) + '\n')
-        print("Strength (1):   Agility (2):   Intelligence (3):")
-        print("     " + str(self.character.stats.strength) \
-            + "                " + str(self.character.stats.agility) \
-            + "              " + str(self.character.stats.intelligence))
-        print("Defense (4):   Vitality (5):")
-        print("     " + str(self.character.stats.defense) \
-             + "                " + str(self.character.stats.vitality))
-        print("-----------------------------------------------\n")
-
-    def add_stat(self, stat, amount):
-        if stat == 1:
-            # Strength
-            self.character.stats.strength += amount
-        elif stat == 2:
-            # Agility
-            self.character.stats.agility += amount
-        elif stat == 3:
-            # Intelligence
-            self.character.stats.intelligence += amount
-        elif stat == 4:
-            # Defense
-            self.character.stats.defense += amount
-        elif stat == 5:
-            # Vitality
-            self.character.stats.vitality += amount
-
-    def level_up(self, levels):
-        self.character.stats.level += levels
-        failed = False
-        for i in range(0, levels):
-            for j in range(0, 4):
-                os.system("CLS")
-                if failed:
-                    print("Please enter a number listed above.")
-                self.display_stats()
-                print("Please enter the number for the stat you want to increase.")
-                stat = int(input('> '))
-                if stat in (1, 2, 3, 4, 5):
-                    self.add_stat(stat, 1)
-                else:
-                    j += 1
-                    failed = True
-
-    def level_safe(self, levels):
-        backup = self.character.stats
-        self.level_up(levels)
-        finished = False
-        while not finished:
-            print("Save changes? [y/n]")
-            check = input('> ')
-            if check == 'n':
-                self.character.stats = backup
-                finished = True
-                print("Changes reverted.")
-            elif check == 'y':
-                finished = True
-            else:
-                print("Please enter 'y' or 'n'.")
-                finished = False
-
-
 class Shop(GameSave):
 
     def __init__(self, character):
@@ -113,7 +43,7 @@ class Battle(GameSave):
             self.opp2 = opp2
         else:
             lvl_low = max(1, opp1.stats.level - r.randint(0, 2))
-            lvl_high = opp1.stats.level + r.randint(0, 2)
+            lvl_high = opp1.stats.level + r.randint(0, 1)
             self.opp2 = self.gen_rnd_glad(r.randint(lvl_low, lvl_high), \
                 super().name_lst[r.randint(0, len(super().name_lst) - 1)])
 
@@ -146,21 +76,39 @@ class Battle(GameSave):
             else:
                 i += 1
 
-        att = Attributes(lvl, atb[0], atb[1], atb[2], atb[3], atb[4])
+        att = Attributes(name, lvl, atb[0], atb[1], atb[2], atb[3], atb[4])
         gear = Equipment(weaponLst[gear_lst[0]], chestLst[gear_lst[1]], \
             legLst[gear_lst[2]], shieldLst[gear_lst[3]], helmetLst[gear_lst[4]])
-        return Opponent(name, gear, att)
+
+        agg = r.randint(0, 100)
+
+        return Opponent(name, gear, att, agg)
 
     def restart(self):
         '''
             Resets battle and competitors
         '''
-        print("Welcome to", self.location, "\n")
         self.opp1.health = self.opp1.MAX_HEALTH
         self.opp2.health = self.opp2.MAX_HEALTH
         self.opp1.armor = self.opp1.MAX_ARMOR
         self.opp2.armor = self.opp2.MAX_ARMOR
         self.write_status()
+
+    def confirm(self):
+        self.write_status()
+        finished = False
+        while not finished:
+            print("Enter battle? [y/n]")
+            check = input('> ')
+            if check == 'n':
+                finished = True
+            elif check == 'y':
+                finished = True
+                self.main_loop()
+            else:
+                print("Please enter 'y' or 'n'.")
+                finished = False
+
 
     def main_loop(self):
         '''
@@ -218,6 +166,11 @@ class Battle(GameSave):
         '''
         if self.opp1.health <= 0:
             print("{} has been slain!".format(self.opp1.name))
+            if type(self.opp2) is Player:
+                self.opp2.stats.xp += 50
+                self.opp2.stats.check_level()
         elif self.opp2.health <= 0:
             print("{} has been slain!".format(self.opp2.name))
-            
+            if type(self.opp1) is Player:
+                self.opp1.stats.xp += 50
+                self.opp1.stats.check_level()
