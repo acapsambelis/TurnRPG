@@ -16,6 +16,7 @@ class Gladiator:
         self.health = stats.vitality * 10 + 10
         self.MAX_ARMOR = gear.totalARM
         self.armor = gear.totalARM
+        self.position = 0
 
     def choose_att(self, other, decider):
         '''
@@ -36,6 +37,12 @@ class Gladiator:
         elif decider == 3:
             self.attack(other, self.gear.weapon.dmg_l + rnd_divider * 2, \
                 self.gear.weapon.dmg_h, self.calc_hit_chances(other, decider))
+        elif decider == 4:
+            self.move(1)
+        elif decider == 5:
+            self.move(-1)
+        elif decider == -1:
+            exit()
 
     def do_dmg(self, other, amt):
         '''
@@ -61,14 +68,12 @@ class Gladiator:
         '''
             Decides if and how much damage will be dealt
         '''
-        rnd_divider = (self.gear.weapon.dmg_h - self.gear.weapon.dmg_l) // 3
-        hit_damage = r.randint(lowb, highb) + self.stats.strength
+        if abs(self.position - other.position) <= self.gear.weapon.rng:
+            rnd_divider = (self.gear.weapon.dmg_h - self.gear.weapon.dmg_l) // 3
+            hit_damage = r.randint(lowb, highb) + self.stats.strength
 
-        if r.randint(1, 100) < hit_chance:
-            print(self.name, "attacks! Damage:", hit_damage)
-            self.do_dmg(other, hit_damage)
-        else:
-            print(self.name, "missed!")
+            if r.randint(1, 100) < hit_chance:
+                self.do_dmg(other, hit_damage)
 
     def calc_hit_chances(self, other, att_type):
         '''
@@ -84,6 +89,18 @@ class Gladiator:
             chance = min(99, 23 + (10 * self.stats.intelligence)/other.stats.defense)
 
         return int(chance)
+    
+    def move(self, direction):
+        '''
+            Changes position.
+            If move right, dir is positive
+            If move left, dir is negative
+        '''
+        
+        delta_x = direction * ((self.stats.agility // 2) + 1)
+        if self.position + delta_x <= 50 and self.position + delta_x >= 1:
+            self.position += delta_x
+
 
 
 class Opponent(Gladiator):
@@ -97,14 +114,43 @@ class Opponent(Gladiator):
         '''
             Takes AI turn. If attack, random kind based on rnd
         '''
+        in_range = abs(self.position - other.position) <= self.gear.weapon.rng
         rnd = r.randint(1,3)
-        if self.health >= self.MAX_HEALTH // 2:
-            self.choose_att(other, rnd)
+        if self.aggression < 5:
+            # Scaredy cat
+            self.run_away(other)
         else:
-            if r.randint(0, 100) > self.aggression:
-                self.choose_att(other, rnd)
+            # Move towards
+            if abs(self.position - other.position) > self.gear.weapon.rng:
+                self.run_towards(other)
             else:
-                self.heal()
+                if self.health >= self.MAX_HEALTH // 2:
+                    self.choose_att(other, rnd)
+                else:
+                    if r.randint(0, 100) > self.aggression:
+                        self.choose_att(other, rnd)
+                    else:
+                        self.heal()
+
+    def run_away(self, other):
+        dist = (self.position - other.position)
+        delta_x = (self.stats.agility // 2) + 1
+        if abs(dist + delta_x) > abs(dist -1 * delta_x):
+            # Move right
+            self.move(1)
+        else:
+            # Move left
+            self.move(-1)
+
+    def run_towards(self, other):
+        dist = (self.position - other.position)
+        delta_x = (self.stats.agility // 2) + 1
+        if abs(dist + delta_x) < abs(dist + -1 * delta_x):
+            # Move right
+            self.move(1)
+        else:
+            # Move left
+            self.move(-1)
 
 
 
@@ -120,12 +166,18 @@ class Player(Gladiator):
         print("1: Quick attack:", self.calc_hit_chances(other, 1))
         print("2: Medium attack:", self.calc_hit_chances(other, 2))
         print("3: Heavy attack:", self.calc_hit_chances(other, 3))
-        move = int(input("> "))
-        while int(move) < 0 or int(move) > 3:
+        print("4: Move right")
+        print("5: Move left")
+        choice = input("> ")
+        if choice != None:
+            choice = int(choice)
+        else:
+            choice = -2
+        while int(choice) < -1 or int(choice) > 5:
             print("Please enter a number listed above.")
             print("Or enter '-1' to quit.")
-            move = int(input(">"))
-        self.choose_att(other, move)
+            choice = int(input(">"))
+        self.choose_att(other, choice)
 
 
 class Attributes:
@@ -148,13 +200,14 @@ class Attributes:
             Levels up until xp is below required_xp
         '''
         while self.xp >= self.required_xp:
-            self.xp -= self.required_xp
             self.level_safe(1)
+            self.xp -= self.required_xp
             self.required_xp = 15 * self.level * (self.level + 5)
 
     def display_stats(self):
-        print("\n-----------------------------------------------")
-        print("XP: {} / {}".format(self.xp, self.required_xp))
+        if self.level != 1:
+            print("\n-----------------------------------------------")
+            print("XP: {} / {}".format(self.xp, self.required_xp))
         print("-----------------------------------------------")
         print(self.name)
         print("Level: " + str(self.level) + '\n')
@@ -192,6 +245,9 @@ class Attributes:
             Creates backup before changing in case the user
                 wants to revert to older changes
         '''
+        CAP = 4
+        if self.level == 0:
+            CAP = 10
 
         # Initialize and create backup
         finished = False
@@ -201,15 +257,17 @@ class Attributes:
         # Actual Leveling
         for i in range(0, levels):
             self.level += 1
-            for j in range(0, 4):
+            points = 0
+            while points < CAP:
+                print('points:',points)
                 os.system("CLS")
                 self.display_stats()
                 print("Please enter the number for the stat you want to increase.")
                 stat = int(input('> '))
                 if stat in (1, 2, 3, 4, 5):
                     self.add_stat(stat, 1)
+                    points += 1
                 else:
-                    j += 1
                     print("Please enter a number listed above.")
         os.system("CLS")
         self.display_stats()

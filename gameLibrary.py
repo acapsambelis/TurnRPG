@@ -47,7 +47,13 @@ class Battle(GameSave):
             self.opp2 = self.gen_rnd_glad(r.randint(lvl_low, lvl_high), \
                 super().name_lst[r.randint(0, len(super().name_lst) - 1)])
 
+        self.opp1.position = 18
+        self.opp2.position = 32
         self.location = location
+        self.play_field = ['|']
+        for i in range(0, 50):
+            self.play_field += [' ']
+        self.play_field += ['|']
 
     def gen_rnd_glad(self, lvl, name):
         '''
@@ -150,6 +156,24 @@ class Battle(GameSave):
             "I:", self.opp2.stats.intelligence, "D:", self.opp2.stats.defense,\
             "V:", self.opp2.stats.vitality)
         print("-------------------")
+        self.show_positions()
+
+    def show_positions(self):
+        
+        #Reset play_field
+        self.play_field = ['|']
+        for i in range(0, 50):
+            self.play_field += [' ']
+        self.play_field += ['|']
+
+        self.play_field[self.opp1.position] = self.opp1.name[:1]
+        self.play_field[self.opp2.position] = self.opp2.name[:1]
+
+        # Draw play_field
+        print("\n----------------------------------------------------")
+        print(*self.play_field, sep='')
+        print("----------------------------------------------------\n")
+
 
     def check_healths(self):
         '''
@@ -167,10 +191,10 @@ class Battle(GameSave):
         if self.opp1.health <= 0:
             print("{} has been slain!".format(self.opp1.name))
             if type(self.opp2) is Player:
-                self.opp2.stats.xp += 50
+                self.opp2.stats.xp += 30 * self.opp1.stats.level + r.randint(0, 15)
                 self.opp2.stats.check_level()
         elif self.opp2.health <= 0:
             print("{} has been slain!".format(self.opp2.name))
             if type(self.opp1) is Player:
-                self.opp1.stats.xp += 50
+                self.opp1.stats.xp += 30 * self.opp1.stats.level + r.randint(0, 15)
                 self.opp1.stats.check_level()

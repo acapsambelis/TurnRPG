@@ -14,13 +14,13 @@ class Equipment:
             + shield.armor_val + helmet.armor_val
 
 
-
 class Sword(Equipment):
     
-    def __init__(self, name, dmg_l, dmg_h):
+    def __init__(self, name, dmg_l, dmg_h, rng):
         self.name = name
         self.dmg_l = dmg_l
         self.dmg_h = dmg_h
+        self.rng = rng
 
     def bleedDMG(self, victim):
         pass
@@ -28,10 +28,11 @@ class Sword(Equipment):
 
 class Axe(Equipment):
     
-    def __init__(self, name, dmg_l, dmg_h):
+    def __init__(self, name, dmg_l, dmg_h, rng):
         self.name = name
         self.dmg_l = dmg_l
         self.dmg_h = dmg_h
+        self.rng = rng
 
     def gashDMG(self, victim):
         pass

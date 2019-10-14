@@ -18,7 +18,7 @@ def main():
 
     # Initialize player
 
-    player_equip = Equipment(ironSwd, chainCP, chainLG, ironSH, chainHM)
+    player_equip = Equipment(steelAxe, chainCP, chainLG, ironSH, chainHM)
     player_stats = Attributes("Player", 0, 1, 1, 1, 1, 1)
     player = Player("Player", player_equip, player_stats, "Location")
 
@@ -31,7 +31,7 @@ def main():
         fight = Battle(player, None, "the Thunderdome!")
         fight.confirm()
 
-        go = input("Continue?")
+        go = input("Continue?")  
         cont = check_cont(go)
 
     

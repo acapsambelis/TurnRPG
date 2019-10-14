@@ -6,17 +6,17 @@
 from itemLibrary import *
 
 # Swords
-bareSwd = Sword("None", 0, 0)
-bronzeSwd = Sword("Bronze sword", 0, 10)
-ironSwd = Sword("Iron sword", 10, 25)
-broadSwd = Sword("Broadsword", 25, 40)
+bareSwd = Sword("None", 0, 0, 1)
+bronzeSwd = Sword("Bronze sword", 0, 10, 2)
+ironSwd = Sword("Iron sword", 10, 25, 2)
+broadSwd = Sword("Broadsword", 25, 40, 2)
 
 swordLst = [bareSwd, broadSwd, ironSwd, broadSwd]
 
 # Axes
-bareAxe = Axe("None", 0, 0)
-bronzeAxe = Axe("Bronze axe", 0, 15)
-steelAxe = Axe("Steel axe", 15, 30)
+bareAxe = Axe("None", 0, 0, 1)
+bronzeAxe = Axe("Bronze axe", 0, 15, 3)
+steelAxe = Axe("Steel axe", 15, 30, 3)
 
 axeLst = [bareAxe, bronzeAxe, steelAxe]
 
