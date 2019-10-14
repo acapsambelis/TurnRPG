@@ -18,7 +18,8 @@ def main():
 
     # Initialize player
 
-    player_equip = Equipment(steelAxe, chainCP, chainLG, ironSH, chainHM)
+    player_equip = Equipment(longBow, ironSwd, chainCP, chainLG, \
+        ironSH, chainHM, huntingQui)
     player_stats = Attributes("Player", 0, 1, 1, 1, 1, 1)
     player = Player("Player", player_equip, player_stats, "Location")
 

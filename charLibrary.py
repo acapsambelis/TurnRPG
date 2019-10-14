@@ -23,24 +23,26 @@ class Gladiator:
             Chooses what type of attack: quick, medium, or heavy
             Calls do_dmg with damage
         '''
-        rnd_divider = (self.gear.weapon.dmg_h - self.gear.weapon.dmg_l) // 3
+        rnd_divider = (self.gear.c_weapon.dmg_h - self.gear.c_weapon.dmg_l) // 3
         if decider == 0:
             self.heal()
         elif decider == 1:
-            self.attack(other, self.gear.weapon.dmg_l, \
-                self.gear.weapon.dmg_l + rnd_divider, \
+            self.attack(other, self.gear.c_weapon.dmg_l, \
+                self.gear.c_weapon.dmg_l + rnd_divider, \
                 self.calc_hit_chances(other, decider))
         elif decider == 2:
-            self.attack(other, self.gear.weapon.dmg_l + rnd_divider, \
-                self.gear.weapon.dmg_l + rnd_divider * 2, \
+            self.attack(other, self.gear.c_weapon.dmg_l + rnd_divider, \
+                self.gear.c_weapon.dmg_l + rnd_divider * 2, \
                 self.calc_hit_chances(other, decider))
         elif decider == 3:
-            self.attack(other, self.gear.weapon.dmg_l + rnd_divider * 2, \
-                self.gear.weapon.dmg_h, self.calc_hit_chances(other, decider))
+            self.attack(other, self.gear.c_weapon.dmg_l + rnd_divider * 2, \
+                self.gear.c_weapon.dmg_h, self.calc_hit_chances(other, decider))
         elif decider == 4:
             self.move(1)
         elif decider == 5:
             self.move(-1)
+        elif decider == 6:
+            self.change_weapon()
         elif decider == -1:
             exit()
 
@@ -68,12 +70,20 @@ class Gladiator:
         '''
             Decides if and how much damage will be dealt
         '''
-        if abs(self.position - other.position) <= self.gear.weapon.rng:
-            rnd_divider = (self.gear.weapon.dmg_h - self.gear.weapon.dmg_l) // 3
-            hit_damage = r.randint(lowb, highb) + self.stats.strength
+        allowed = True
+        if type(self.gear.c_weapon) is Bow:
+            if self.gear.weapon_acc.amount > 0:
+                self.gear.weapon_acc.amount -= 1
+            else:
+                allowed = False
 
-            if r.randint(1, 100) < hit_chance:
-                self.do_dmg(other, hit_damage)
+        if allowed:
+            if abs(self.position - other.position) <= self.gear.c_weapon.rng:
+                rnd_divider = (self.gear.c_weapon.dmg_h - self.gear.c_weapon.dmg_l) // 3
+                hit_damage = r.randint(lowb, highb) + self.stats.strength
+
+                if r.randint(1, 100) < hit_chance:
+                    self.do_dmg(other, hit_damage)
 
     def calc_hit_chances(self, other, att_type):
         '''
@@ -101,6 +111,12 @@ class Gladiator:
         if self.position + delta_x <= 50 and self.position + delta_x >= 1:
             self.position += delta_x
 
+    def change_weapon(self):
+        if self.gear.c_weapon == self.gear.weapon1:
+            self.gear.c_weapon = self.gear.weapon2
+        else:
+            self.gear.c_weapon = self.gear.weapon1
+
 
 
 class Opponent(Gladiator):
@@ -114,14 +130,24 @@ class Opponent(Gladiator):
         '''
             Takes AI turn. If attack, random kind based on rnd
         '''
-        in_range = abs(self.position - other.position) <= self.gear.weapon.rng
+        turn_done = False
+        in_range = abs(self.position - other.position) <= self.gear.c_weapon.rng
         rnd = r.randint(1,3)
-        if self.aggression < 5:
-            # Scaredy cat
-            self.run_away(other)
-        else:
-            # Move towards
-            if abs(self.position - other.position) > self.gear.weapon.rng:
+
+        if not turn_done:
+            if type(self.gear.c_weapon) is Bow and self.gear.weapon_acc.amount <= 0:
+                self.change_weapon()
+                turn_done = True
+
+        if not turn_done:
+            if self.aggression < 5:
+                # Scaredy cat
+                self.run_away(other)
+                turn_done = True
+
+        # Move towards
+        if not turn_done:
+            if abs(self.position - other.position) > self.gear.c_weapon.rng:
                 self.run_towards(other)
             else:
                 if self.health >= self.MAX_HEALTH // 2:
@@ -168,12 +194,14 @@ class Player(Gladiator):
         print("3: Heavy attack:", self.calc_hit_chances(other, 3))
         print("4: Move right")
         print("5: Move left")
+        if self.gear.weapon2 != None:
+            print("6: Swap weapons")
         choice = input("> ")
-        if choice != None:
+        if choice != '':
             choice = int(choice)
         else:
             choice = -2
-        while int(choice) < -1 or int(choice) > 5:
+        while int(choice) < -1 or int(choice) > 6:
             print("Please enter a number listed above.")
             print("Or enter '-1' to quit.")
             choice = int(input(">"))

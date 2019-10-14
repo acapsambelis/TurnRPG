@@ -20,6 +20,22 @@ steelAxe = Axe("Steel axe", 15, 30, 3)
 
 axeLst = [bareAxe, bronzeAxe, steelAxe]
 
+# Bows
+bareBow = Bow("None", 0, 0, 1)
+slingshotBow = Bow("Slingshot", 0, 5, 10)
+huntingBow = Bow("Hunting Bow", 5, 15, 15)
+longBow = Bow("Longbow", 15, 30, 30)
+
+bowLst = [bareBow, slingshotBow, huntingBow, longBow]
+
+# Accessories
+emptyQui = Quiver("Empty", 0)
+huntingQui = Quiver("Hunting quiver", 5)
+trainingQui = Quiver("Training quiver", 10)
+
+quiverLst = [emptyQui, huntingQui, trainingQui]
+accessLst = [[None], quiverLst]
+
 # Chestplates
 bareCP = Chestplate("None", 0)
 leatherCP = Chestplate("Leather breastplate", 25)

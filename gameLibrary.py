@@ -63,28 +63,60 @@ class Battle(GameSave):
             Randomly distributes points for gear. Lvl - random buffer
         '''
         atb = [1, 1, 1, 1, 1]
-        rnd_buffer = r.randint(0, lvl)
+        rnd_buffer = r.randint(0, lvl-1)
         for i in range(lvl*4, 0, -1):
             rnd_atb = r.randint(0, len(atb)-1)
             atb[rnd_atb] += 1
 
-        if r.random() > .5:
-            weaponLst = swordLst
-        else:
-            weaponLst = axeLst
+        gear_lst = [1, 1, 0, 0, 0, 0, 0]
 
-        gear_master = [weaponLst, chestLst, legLst, shieldLst, helmetLst]
-        gear_lst = [0, 0, 0, 0, 0]
-        for i in range(lvl - rnd_buffer, 0, -1):
-            rnd_gear = r.randint(0, len(gear_lst)-1)
+        rnd_1 = r.random()
+        if rnd_1 > .6:
+            weaponLst1 = swordLst
+        elif rnd_1 > .3:
+            weaponLst1 = axeLst
+        else:
+            weaponLst1 = bowLst
+
+        rnd_2 = r.random()
+        if weaponLst1 != bowLst:
+            if rnd_2 > .75:
+                weaponLst2 = swordLst
+            elif rnd_2 > .5:
+                weaponLst2 = axeLst
+            elif rnd_2 > .25:
+                weaponLst2 = bowLst
+            else:
+                weaponLst2 = [None]
+                gear_lst[1] = 0
+        else:
+            if rnd_2 > .5:
+                weaponLst2 = swordLst
+            else:
+                weaponLst2 = axeLst
+
+        weaponLst3 = accessLst[0]
+        if weaponLst2 == bowLst or weaponLst1 == bowLst:
+            weaponLst3 = accessLst[1]
+            gear_lst[6] += 1
+
+        gear_master = [weaponLst1, weaponLst2, chestLst, legLst, \
+            shieldLst, helmetLst, weaponLst3]
+
+        for i in range(3 * (lvl - rnd_buffer), 0, -1):
+            length = len(gear_lst) - 1
+            if gear_lst[6] == 0:
+                length = len(gear_lst) - 2
+            rnd_gear = r.randint(0, length)
             if gear_lst[rnd_gear] + 1 < len(gear_master[rnd_gear]):
                 gear_lst[rnd_gear] += 1
             else:
                 i += 1
-
+        print(gear_lst)
         att = Attributes(name, lvl, atb[0], atb[1], atb[2], atb[3], atb[4])
-        gear = Equipment(weaponLst[gear_lst[0]], chestLst[gear_lst[1]], \
-            legLst[gear_lst[2]], shieldLst[gear_lst[3]], helmetLst[gear_lst[4]])
+        gear = Equipment(weaponLst1[gear_lst[0]], weaponLst2[gear_lst[1]], \
+            chestLst[gear_lst[2]], legLst[gear_lst[3]], shieldLst[gear_lst[4]], \
+            helmetLst[gear_lst[5]], weaponLst3[gear_lst[6]])
 
         agg = r.randint(0, 100)
 
@@ -98,6 +130,12 @@ class Battle(GameSave):
         self.opp2.health = self.opp2.MAX_HEALTH
         self.opp1.armor = self.opp1.MAX_ARMOR
         self.opp2.armor = self.opp2.MAX_ARMOR
+
+        if self.opp1.gear.weapon_acc != None:
+            self.opp1.gear.weapon_acc.amount = self.opp1.gear.weapon_acc.MAX_CAPACITY
+        if self.opp2.gear.weapon_acc != None:
+            self.opp2.gear.weapon_acc.amount = self.opp2.gear.weapon_acc.MAX_CAPACITY
+
         self.write_status()
 
     def confirm(self):
@@ -145,13 +183,25 @@ class Battle(GameSave):
         print(self.opp1.name + "      Level: " + str(self.opp1.stats.level))
         print("HEALTH: " + str(self.opp1.health))
         print("ARMOR: " + str(self.opp1.armor))
+        print("WEAPON: " + str(self.opp1.gear.c_weapon.name), end='')
+        if type(self.opp1.gear.c_weapon) is Bow:
+            print(' (' + str(self.opp1.gear.weapon_acc.amount) + ')')
+        else:
+            print('')
         print("S:", self.opp1.stats.strength, "A:", self.opp1.stats.agility, \
             "I:", self.opp1.stats.intelligence, "D:", self.opp1.stats.defense,\
             "V:", self.opp1.stats.vitality)
+
         print("\n-----------------")
+
         print(self.opp2.name + "      Level: " + str(self.opp2.stats.level))
         print("HEALTH: " + str(self.opp2.health))
         print("ARMOR: " + str(self.opp2.armor))
+        print("WEAPON: " + str(self.opp2.gear.c_weapon.name), end='')
+        if type(self.opp2.gear.c_weapon) is Bow:
+            print(' (' + str(self.opp2.gear.weapon_acc.amount) + ')')
+        else:
+            print('')
         print("S:", self.opp2.stats.strength, "A:", self.opp2.stats.agility, \
             "I:", self.opp2.stats.intelligence, "D:", self.opp2.stats.defense,\
             "V:", self.opp2.stats.vitality)
