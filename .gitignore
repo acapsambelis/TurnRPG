@@ -1,3 +1,4 @@
-# Ignore pycache file
+# Ignore pycache, vs file and Saves folder
 __pycache__/
 .vscode/
+Saves/
