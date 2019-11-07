@@ -3,8 +3,10 @@
 '''
 import random as r
 import os
+import json
 
 from itemLibrary import *
+
 
 class Gladiator:
 
@@ -17,6 +19,7 @@ class Gladiator:
         self.MAX_ARMOR = gear.totalARM
         self.armor = gear.totalARM
         self.position = 0
+
 
     def choose_att(self, other, decider):
         '''
@@ -182,10 +185,11 @@ class Opponent(Gladiator):
 
 class Player(Gladiator):
 
-    def __init__(self, name, gear, stats, location):
+    def __init__(self, name, gear, stats, money, location):
         super().__init__(name, gear, stats)
+        self.money = money
         self.location = location
-        self.stats.level_safe(1)
+
 
     def take_turn(self, other):
         print("0: Heal 10 hp")
@@ -215,12 +219,13 @@ class Attributes:
         self.name = name
         self.level = level
         self.xp = 0
-        self.required_xp = 100
+        self.required_xp = 15 * self.level * (self.level + 5)
         self.strength = strength
         self.agility = agility
         self.intelligence = intelligence
         self.defense = defense
         self.vitality = vitality
+
 
     def check_level(self):
         '''

@@ -2,39 +2,41 @@
     Main file/loop for gladiator game
 '''
 
-from charLibrary import *
-from itemLibrary import *
 from gameLibrary import *
-from buildItems import * # Also runs file. Builds items 
+from buildItems import *
+from funcLib import *
 
-def check_cont(cont):
-    if cont == '-1':
-        return False
-    else:
-        return True
-
+import os
 
 def main():
+    '''
+        Main game file.
+        Logic:
+            Clears terminal
+            Obtains gladiators from folder
+            Prints saves for user to choose from
+                Loads save into Player object
+                or
+                Creates new Player object
+            *Loops battles* (Not final)
+    '''
+    os.system("CLS")
+    main_game = Game()
 
-    # Initialize player
-
-    player_equip = Equipment(longBow, ironSwd, chainCP, chainLG, \
-        ironSH, chainHM, huntingQui)
-    player_stats = Attributes("Player", 0, 1, 1, 1, 1, 1)
-    player = Player("Player", player_equip, player_stats, "Location")
-
-    # Loop battles
-    go = input("Continue?")
-    cont = check_cont(go)
-
-    while cont:
-
-        fight = Battle(player, None, "the Thunderdome!")
-        fight.confirm()
-
-        go = input("Continue?")  
-        cont = check_cont(go)
-
+    glad_lst = open_saves(main_game)
     
+    save = write_homescreen(glad_lst)
+    
+    if save == -1:
+        glad = main_game.create_glad()
+        glad.stats.level_safe(1)
+        main_game.save_glad(glad)
+    else:
+        glad = glad_lst[save]
+
+    cont_loop(glad)
+    
+
 if __name__ == '__main__':
     main()
+    

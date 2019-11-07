@@ -48,10 +48,16 @@ class Bow(Weapon):
         super().__init__(name, dmg_l, dmg_h, rng)
 
 
-class Quiver:
+class Accesory:
+
+    def __init__(self, name):
+        self.name = name
+
+
+class Quiver(Accesory):
 
     def __init__(self, name, amount):
-        self.name = name
+        super().__init__(name)
         self.MAX_CAPACITY = amount
         self.amount = amount
 

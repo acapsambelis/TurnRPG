@@ -60,6 +60,18 @@ shieldLst = [bareSH, woodSH, ironSH]
 # Helmet
 bareHM = Helmet("None", 0)
 leatherHM = Helmet("Leather cap", 25)
-chainHM = Helmet("Iron shield", 40)
+chainHM = Helmet("Chain mail helmet", 40)
 
 helmetLst = [bareHM, leatherHM, chainHM]
+
+
+item_type_dict = {
+    "<class 'itemLibrary.Sword'>": swordLst, \
+    "<class 'itemLibrary.Axe'>": axeLst, \
+    "<class 'itemLibrary.Bow'>": bowLst, \
+    "<class 'itemLibrary.Chestplate'>": chestLst, \
+    "<class 'itemLibrary.Legs'>": legLst, \
+    "<class 'itemLibrary.Shield'>": shieldLst, \
+    "<class 'itemLibrary.Helmet'>": helmetLst, \
+    "<class 'itemLibrary.Quiver'>": quiverLst
+    }

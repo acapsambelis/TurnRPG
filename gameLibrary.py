@@ -7,32 +7,67 @@ from charLibrary import *
 
 import os
 import random as r
+import pickle
 
-class GameSave:
+class Game:
 
     def __init__(self):
-        pass
+        self.name_lst = self.build_name_lst('names.txt')
 
-    def build_name_lst(filename):
+    def build_name_lst(self, filename):
         '''
             Creates a list of names given the file. File should be names.txt
         '''
         name_lst = []
-        for line in open(filename):
+        f = open(filename)
+        for line in f:
             name_lst += [line.strip()]
+
+        f.close()
 
         return name_lst
 
-    name_lst = build_name_lst('names.txt')
+    def create_glad(self):
+        '''
+            Creates and returns gladiator object
+        '''
+        os.system("CLS")
+        print("\n-----------------------------------------------")
+        print("Please enter a player name:")
+        print("-----------------------------------------------")
+        name = input(">")
+        gear = Equipment(bareSwd, bareAxe, bareCP, bareLG, bareSH, bareHM, None)
+        stats = Attributes(name, 0, 1, 1, 1, 1, 1)
+        glad = Player(name, gear, stats, 1000, "Location")
+
+        return glad
+
+    def load_glad(self, path):
+        '''
+            Loads gladiator from file
+        '''
+        with open(path, "rb") as f:
+            decoded_data = pickle.load(f)
+
+        return decoded_data
 
 
-class Shop(GameSave):
+    def save_glad(self, glad):
+        '''
+            Saves gladiator using pickle
+        '''
+        filename = 'Saves/' + glad.name + '.glad'
+        with open(filename, 'wb') as f:
+            pickle.dump(glad, f)
+    
+        
+class Shop(Game):
 
     def __init__(self, character):
         self.character = character
 
 
-class Battle(GameSave):
+class Battle(Game):
 
     def __init__(self, opp1, opp2, location):
         super().__init__()
@@ -45,15 +80,12 @@ class Battle(GameSave):
             lvl_low = max(1, opp1.stats.level - r.randint(0, 2))
             lvl_high = opp1.stats.level + r.randint(0, 1)
             self.opp2 = self.gen_rnd_glad(r.randint(lvl_low, lvl_high), \
-                super().name_lst[r.randint(0, len(super().name_lst) - 1)])
+                self.name_lst[r.randint(0, len(self.name_lst) - 1)])
 
         self.opp1.position = 18
         self.opp2.position = 32
         self.location = location
-        self.play_field = ['|']
-        for i in range(0, 50):
-            self.play_field += [' ']
-        self.play_field += ['|']
+        self.play_field = ['|'] + [' '] * 50 + ['|']
 
     def gen_rnd_glad(self, lvl, name):
         '''
@@ -211,10 +243,7 @@ class Battle(GameSave):
     def show_positions(self):
         
         #Reset play_field
-        self.play_field = ['|']
-        for i in range(0, 50):
-            self.play_field += [' ']
-        self.play_field += ['|']
+        self.play_field = ['|'] + [' '] * 50 + ['|']
 
         self.play_field[self.opp1.position] = self.opp1.name[:1]
         self.play_field[self.opp2.position] = self.opp2.name[:1]
