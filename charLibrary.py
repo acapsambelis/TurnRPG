@@ -14,8 +14,8 @@ class Gladiator:
         self.name = name
         self.gear = gear
         self.stats = stats
-        self.MAX_HEALTH = stats.vitality * 10 + 10
-        self.health = stats.vitality * 10 + 10
+        self.MAX_HEALTH = stats.vitality * 20 + 40
+        self.health = self.MAX_HEALTH
         self.MAX_ARMOR = gear.totalARM
         self.armor = gear.totalARM
         self.position = 0
@@ -190,6 +190,15 @@ class Player(Gladiator):
         self.money = money
         self.location = location
 
+    def update_stats(self):
+        '''
+            Updates other values changed by stat/level increase
+        '''
+        self.gear.update_stats()
+        self.MAX_HEALTH = self.stats.vitality * 20 + 40
+        self.health = self.MAX_HEALTH
+        self.MAX_ARMOR = self.gear.totalARM
+        self.armor = self.MAX_ARMOR
 
     def take_turn(self, other):
         print("0: Heal 10 hp")
@@ -200,16 +209,20 @@ class Player(Gladiator):
         print("5: Move left")
         if self.gear.weapon2 != None:
             print("6: Swap weapons")
-        choice = input("> ")
-        if choice != '':
-            choice = int(choice)
-        else:
-            choice = -2
-        while int(choice) < -1 or int(choice) > 6:
-            print("Please enter a number listed above.")
-            print("Or enter '-1' to quit.")
-            choice = int(input(">"))
-        self.choose_att(other, choice)
+
+        finished = False
+        while not finished:
+            choice = input('> ')
+            try:
+                choice = int(choice)
+                if choice not in (-1, 0, 1, 2, 3, 4, 5, 6):
+                    raise ValueError
+            except:
+                print("Please enter a number listed above.")
+                print("Or enter '-1' to quit.")
+                finished = False
+            else:
+                self.choose_att(other, choice)        
 
 
 class Attributes:
@@ -225,7 +238,6 @@ class Attributes:
         self.intelligence = intelligence
         self.defense = defense
         self.vitality = vitality
-
 
     def check_level(self):
         '''
@@ -292,20 +304,29 @@ class Attributes:
             self.level += 1
             points = 0
             while points < CAP:
-                print('points:',points)
                 os.system("CLS")
                 self.display_stats()
                 print("Please enter the number for the stat you want to increase.")
-                stat = int(input('> '))
-                if stat in (1, 2, 3, 4, 5):
-                    self.add_stat(stat, 1)
-                    points += 1
-                else:
-                    print("Please enter a number listed above.")
+                finished = False
+                while not finished:
+                    stat = input('> ')
+                    try:
+                        stat = int(stat)
+                        if stat not in (1, 2, 3, 4, 5):
+                            raise ValueError
+                    except:
+                        print("Please enter a number listed above.")
+                        finished = False
+                    else:
+                            self.add_stat(stat, 1)
+                            points += 1
+                            finished = True
+
         os.system("CLS")
         self.display_stats()
 
         # Save changes
+        finished = False
         while not finished:
             print("Save changes? [y/n]")
             check = input('> ')

@@ -3,38 +3,28 @@
 '''
 
 from gameLibrary import *
-from buildItems import *
-from funcLib import *
 
-import os
 
 def main():
     '''
         Main game file.
         Logic:
             Clears terminal
-            Obtains gladiators from folder
-            Prints saves for user to choose from
-                Loads save into Player object
-                or
-                Creates new Player object
-            *Loops battles* (Not final)
+            Builds locations in map
+            Runs Title.main_loop
+                Loads correct gladiator
+                Player enters town, can go to different places
+                    inside main_game.main_loop()
     '''
-    os.system("CLS")
-    main_game = Game()
 
-    glad_lst = open_saves(main_game)
-    
-    save = write_homescreen(glad_lst)
-    
-    if save == -1:
-        glad = main_game.create_glad()
-        glad.stats.level_safe(1)
-        main_game.save_glad(glad)
-    else:
-        glad = glad_lst[save]
+    crh = Church("church.txt")
+    frg = Shop("forge.txt", [swordLst, axeLst, bowLst, quiverLst])
+    arm = Shop("armory.txt", [chestLst, legLst, shieldLst, helmetLst])
 
-    cont_loop(glad)
+    main_game = Game(crh, frg, arm, "map.txt")
+    title_screen = Title()
+
+    title_screen.main_loop(main_game)
     
 
 if __name__ == '__main__':
