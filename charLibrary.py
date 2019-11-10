@@ -3,9 +3,9 @@
 '''
 import random as r
 import os
-import json
 
 from itemLibrary import *
+from buildItems import emptyItem, bronzeSwd
 
 
 class Gladiator:
@@ -182,13 +182,13 @@ class Opponent(Gladiator):
             self.move(-1)
 
 
-
 class Player(Gladiator):
 
-    def __init__(self, name, gear, stats, money, location):
+    def __init__(self, name, gear, stats, money, loc):
         super().__init__(name, gear, stats)
         self.money = money
-        self.location = location
+        self.location = loc
+        self.inventory = [emptyItem] * 21
 
     def update_stats(self):
         '''
@@ -199,6 +199,53 @@ class Player(Gladiator):
         self.health = self.MAX_HEALTH
         self.MAX_ARMOR = self.gear.totalARM
         self.armor = self.MAX_ARMOR
+
+    def display_inventory(self):
+        '''
+            Writes inventory to screen using f strings
+        '''
+        if self.gear.weapon_acc.name not in  ("None", ""):
+            acc_display =  self.gear.weapon_acc.name + " (" + \
+                str(self.gear.weapon_acc.MAX_CAPACITY) + ")"
+        else:
+            acc_display = ""
+
+        print("-----------------------------------------------")
+        print("INVENTORY")
+        print("---------------------------------------------------------------------------------------------------")
+        print("|          (1)          |          (2)          |          (3)          | Helmet:                 |")
+        print("|{0:^23}|{1:^23}|{2:^23}|  {3:<22} |".format(self.inventory[0].name, \
+            self.inventory[1].name, self.inventory[2].name, self.gear.helmet.name))
+        print("------------------------------------------------------------------------| Chestplate:             |")
+        print("|          (4)          |          (5)          |          (6)          |  {0:<22} |"\
+            .format(self.gear.chest.name))
+        print("|{0:^23}|{1:^23}|{2:^23}|    ___                  |".format(self.inventory[3].name, \
+            self.inventory[4].name, self.inventory[5].name))
+        print("------------------------------------------------------------------------|   /   \                 |")
+        print("|          (7)          |          (8)          |          (9)          |   \___/                 |")
+        print("|{0:^23}|{1:^23}|{2:^23}|     |                   |".format(self.inventory[6].name, \
+            self.inventory[7].name, self.inventory[8].name))
+        print("------------------------------------------------------------------------|    /|\   Sheild:        |")
+        print("|          (10)         |          (11)         |          (12)         |   | | |  {0:<14} |"\
+            .format(self.gear.shield.name))
+        print("|{0:^23}|{1:^23}|{2:^23}|     |                   |".format(self.inventory[9].name, \
+            self.inventory[10].name, self.inventory[11].name))
+        print("------------------------------------------------------------------------|    / \  Legs:           |")
+        print("|          (13)         |          (14)         |          (15)         |   |   | {0:<15} |"\
+            .format(self.gear.legs.name))
+        print("|{0:^23}|{1:^23}|{2:^23}|  _|   |_                |".format(self.inventory[12].name, \
+            self.inventory[13].name, self.inventory[14].name))
+        print("------------------------------------------------------------------------|-------------------------|")
+        print("|          (16)         |          (17)         |          (18)         | Weapon 1:               |")
+        print("|{0:^23}|{1:^23}|{2:^23}|  {3:<23}|".format(self.inventory[15].name, \
+            self.inventory[16].name, self.inventory[17].name, self.gear.weapon1.name))
+        print("------------------------------------------------------------------------| Weapon 2:               |")
+        print("|          (19)         |          (20)         |          (21)         |  {0:<23}|"\
+            .format(self.gear.weapon2.name))
+        print("|{0:^23}|{1:^23}|{2:^23}| {3:^23} |".format(self.inventory[18].name, \
+            self.inventory[19].name, self.inventory[20].name, acc_display))
+        print("---------------------------------------------------------------------------------------------------")
+        input()
 
     def take_turn(self, other):
         print("0: Heal 10 hp")
@@ -339,5 +386,4 @@ class Attributes:
             else:
                 print("Please enter 'y' or 'n'.")
                 finished = False
-                
                 

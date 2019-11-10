@@ -27,6 +27,19 @@ def main():
     title_screen.main_loop(main_game)
     
 
+def rebuild_test_glad():
+    """
+        Builds and saves a fresh copy of TEST gladiator
+        Used when initial gladiator values are changed and need testing
+    """
+    gear = Equipment(broadSwd, huntingBow, chainCP, chainLG, ironSH, chainHM, huntingQui)
+    stats = Attributes("Test", 1, 10, 3, 10, 10, 10)
+    glad = Player("Test", gear, stats, 10000, "Location")
+
+    test_game = Game(None, None, None, "map.txt")
+    test_game.save_glad("test", glad)
+
+
 if __name__ == '__main__':
+    #rebuild_test_glad()
     main()
-    

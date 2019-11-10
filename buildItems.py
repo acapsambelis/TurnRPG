@@ -5,6 +5,8 @@
 
 from itemLibrary import *
 
+emptyItem = Weapon("", 0, 0, 0, 0)
+
 # Swords
 bareSwd = Sword("None", 0, 0, 1, 0)
 bronzeSwd = Sword("Bronze sword", 0, 10, 2, 10)
@@ -39,14 +41,14 @@ accessLst = [[None], quiverLst]
 # Chestplates
 bareCP = Chestplate("None", 0, 0)
 leatherCP = Chestplate("Leather breastplate", 25, 10)
-chainCP = Chestplate("Chain mail chestplate", 40, 10)
+chainCP = Chestplate("Chainmail chestplate", 40, 10)
 
 chestLst = [bareCP, leatherCP, chainCP]
 
 # Legs
 bareLG = Legs("None", 0, 0)
 leatherLG = Legs("Leather pants", 25, 10)
-chainLG = Legs("Chain mail pants", 40, 10)
+chainLG = Legs("Chainmail pants", 40, 10)
 
 legLst = [bareLG, leatherLG, chainLG]
 
@@ -60,6 +62,6 @@ shieldLst = [bareSH, woodSH, ironSH]
 # Helmet
 bareHM = Helmet("None", 0, 0)
 leatherHM = Helmet("Leather cap", 25, 10)
-chainHM = Helmet("Chain mail helmet", 40, 10)
+chainHM = Helmet("Chainmail helmet", 40, 10)
 
 helmetLst = [bareHM, leatherHM, chainHM]
