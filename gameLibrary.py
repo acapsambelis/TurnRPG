@@ -37,7 +37,7 @@ class Title:
             save = input('> ')
             try:
                 save = int(save)
-                if save not in range(1, 1+len(save_lst)):
+                if save not in range(1, 2+len(save_lst)):
                     raise ValueError
             except:
                 print("Please enter a number listed above.")
@@ -75,7 +75,6 @@ class Title:
 
 ###############################################################################
 class Game:
-
 
     def __init__(self, crh, frg, arm, map_name=""):
         self.map_str = self.build_map(map_name)
@@ -153,7 +152,7 @@ class Game:
         with open(filename, 'wb') as f:
             pickle.dump(save, f)
 
-    def draw_screen(self, glad):
+    def draw_screen(self, glad, flag=False):
         '''
             Draws main map of game with gladiator stats
         '''
@@ -177,7 +176,8 @@ class Game:
             "I:", glad.stats.intelligence, "D:", glad.stats.defense,\
             "V:", glad.stats.vitality)
 
-        print(self.map_str)
+        if not flag:
+            print(self.map_str)
 
 
     def main_loop(self):
@@ -198,8 +198,12 @@ class Game:
                     print("Please enter a number listed on the map.")
                     finished = False
                 else:
-                    if move in (-2, -1, 1, 2, 3, 4):
-                        if move == 1:
+                    if move in (-2, -1, 0, 1, 2, 3, 4):
+                        if move == 0:
+                            # Inventory
+                            self.draw_screen(self.gladiator, True)
+                            self.gladiator.display_inventory()
+                        elif move == 1:
                             # Church
                             self.crh.main_loop(self.open_saves(), self.gladiator)
                         elif move == 2:
@@ -272,7 +276,7 @@ class Church(Game):
         else:
             self.save_glad(save_lst[save-2].name, glad)
 
-###############################################################################        
+###############################################################################
 class Shop(Game):
 
     def __init__(self, map_name, stock_lsts):
@@ -312,7 +316,10 @@ class Shop(Game):
                     done = True
                 elif glad.money >= stock[purchase].price:
                     glad.money -= stock[purchase].price
-                    stock[purchase].equip(glad)
+                    for i in range(len(glad.inventory)):
+                        if glad.inventory[i].name == "":
+                            glad.inventory[i] = stock[purchase]
+                            break
                     glad.update_stats()
                     done = False
 
